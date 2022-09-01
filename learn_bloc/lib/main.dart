@@ -1,3 +1,4 @@
+import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,47 +10,74 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: HomePage(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+class CounterCubit extends Cubit<int> {
+  CounterCubit({this.initialData = 0}) : super(initialData);
 
-  Stream<int> countStream() async* {
-    for (int i = 0; i <= 10; i++) {
-      await Future.delayed(const Duration(seconds: 1));
-      yield i;
-    }
+  int initialData;
+
+  void tambahData() {
+    emit(state + 1);
   }
+
+  void kurangData() {
+    emit(state - 1);
+  }
+}
+
+class HomePage extends StatelessWidget {
+  CounterCubit myCounter = CounterCubit(initialData: 99);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Stream Apps'),
+        title: const Text('Cubit Apps'),
       ),
-      body: StreamBuilder(
-        stream: countStream(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: Text(
-                'Loading...',
-                style: TextStyle(fontSize: 50),
-              ),
-            );
-          } else {
-            return Center(
-              child: Text(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          StreamBuilder(
+            initialData: myCounter.initialData,
+            stream: myCounter.stream,
+            builder: (context, snapshot) {
+              // if (snapshot.connectionState == ConnectionState.waiting) {
+              //   return const Text(
+              //     'Loading...',
+              //     style: TextStyle(fontSize: 50),
+              //   );
+              // } else {
+              return Text(
                 '${snapshot.data}',
                 style: const TextStyle(fontSize: 50),
-              ),
-            );
-          }
-        },
+              );
+              // }
+            },
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                  onPressed: () {
+                    myCounter.kurangData();
+                  },
+                  icon: const Icon(Icons.remove)),
+              IconButton(
+                  onPressed: () {
+                    myCounter.tambahData();
+                  },
+                  icon: const Icon(Icons.add)),
+            ],
+          )
+        ],
       ),
     );
   }
