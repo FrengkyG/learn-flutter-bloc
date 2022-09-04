@@ -20,6 +20,8 @@ class CounterCubit extends Cubit<int> {
   CounterCubit({this.initialData = 0}) : super(initialData);
 
   int initialData;
+  // int? current;
+  // int? next;
 
   void tambahData() {
     emit(state + 1);
@@ -27,6 +29,22 @@ class CounterCubit extends Cubit<int> {
 
   void kurangData() {
     emit(state - 1);
+  }
+
+  // fitur di bloc untuk memantau data
+  @override
+  void onChange(Change<int> change) {
+    super.onChange(change);
+    print(change);
+    // current = change.currentState;
+    // next = change.nextState;
+  }
+
+  // fitur di bloc untuk cek error
+  @override
+  void onError(Object error, StackTrace stackTrace) {
+    super.onError(error, stackTrace);
+    print(error);
   }
 }
 
@@ -52,9 +70,21 @@ class HomePage extends StatelessWidget {
               //     style: TextStyle(fontSize: 50),
               //   );
               // } else {
-              return Text(
-                '${snapshot.data}',
-                style: const TextStyle(fontSize: 50),
+              return Column(
+                children: [
+                  Text(
+                    '${snapshot.data}',
+                    style: const TextStyle(fontSize: 50),
+                  ),
+                  // Text(
+                  //   'current : ${myCounter.current}',
+                  //   style: const TextStyle(fontSize: 50),
+                  // ),
+                  // Text(
+                  //   'next : ${myCounter.next}',
+                  //   style: const TextStyle(fontSize: 50),
+                  // ),
+                ],
               );
               // }
             },
